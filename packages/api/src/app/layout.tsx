@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AgentDrop API",
-  description: "Secure file sharing API for AI agents",
+  title: "AgentDrop — Agent-native file sharing",
+  description:
+    "Cryptographic identity. Scoped file grants. Zero trust. CLI + SDK + API for agent-to-agent file sharing.",
 };
 
 export default function RootLayout({

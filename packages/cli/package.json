@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "tsup",
+    "bundle": "tsup --config tsup.bundle.config.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
