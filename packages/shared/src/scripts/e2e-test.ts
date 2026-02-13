@@ -268,7 +268,7 @@ async function main() {
     permissions: ["download"],
     ttlSeconds: 300,
   });
-  check("Create grant", grantRes.status === 200, `status=${grantRes.status} body=${JSON.stringify(grantRes.json)}`);
+  check("Create grant", grantRes.status === 200 || grantRes.status === 201, `status=${grantRes.status}`);
 
   const grantToken = (grantRes.json as Record<string, unknown>).token as string;
   const grantRecord = (grantRes.json as Record<string, unknown>).grant as Record<string, unknown>;
@@ -283,13 +283,24 @@ async function main() {
   check("List received grants (agent 2)", receivedRes.status === 200);
 
   // Second agent downloads with grant token
+  // Sign only the pathname (no query string), but pass token as query param
   if (grantToken) {
-    const grantDownloadRes = await agentFetch(
-      priv2,
-      pub2,
-      "GET",
-      `/api/files/${fileId}/download?token=${encodeURIComponent(grantToken)}`,
-    );
+    const dlPath = `/api/files/${fileId}/download`;
+    const dlKeyHash = await hashPublicKey(pub2);
+    const dlSigned = await signRequest(priv2, "GET", dlPath);
+    const dlRes = await fetch(`${BASE}${dlPath}?token=${encodeURIComponent(grantToken)}`, {
+      method: "GET",
+      headers: {
+        [HEADER_KEY_HASH]: dlKeyHash,
+        [HEADER_TIMESTAMP]: dlSigned.timestamp,
+        [HEADER_NONCE]: dlSigned.nonce,
+        [HEADER_SIGNATURE]: dlSigned.signature,
+      },
+    });
+    const dlText = await dlRes.text();
+    let dlJson: unknown;
+    try { dlJson = JSON.parse(dlText); } catch { dlJson = dlText; }
+    const grantDownloadRes = { status: dlRes.status, json: dlJson as Record<string, unknown> };
     check("Download with grant token (agent 2)", grantDownloadRes.status === 200, `status=${grantDownloadRes.status} body=${JSON.stringify(grantDownloadRes.json)}`);
 
     const grantDownloadUrl = (grantDownloadRes.json as Record<string, unknown>).downloadUrl as string;

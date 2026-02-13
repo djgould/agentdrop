@@ -29,7 +29,8 @@
       "Bash(AGENTDROP_URL=https://www.agentdrop.sh CLERK_SECRET_KEY=sk_test_HymZ13AWzzYHp2DrMYXDG3mgiR5muJEQyCNTLKsvau npx tsx /Users/devingould/agentdrop/packages/shared/src/scripts/e2e-test.ts)",
       "WebFetch(domain:clerk.com)",
       "Bash(python3:*)",
-      "Bash(git -C /Users/devingould/agentdrop commit -m \"$\\(cat <<''EOF''\nRefactor upload to two-step server-side flow\n\n- POST /api/upload creates pending file record, returns fileId\n- PUT /api/upload/{id}/blob receives file body, uploads to Vercel Blob\n- Simplifies blob.ts to use put\\(\\) directly\n- Add E2E test script with Clerk session + agent auth\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git -C /Users/devingould/agentdrop commit -m \"$\\(cat <<''EOF''\nRefactor upload to two-step server-side flow\n\n- POST /api/upload creates pending file record, returns fileId\n- PUT /api/upload/{id}/blob receives file body, uploads to Vercel Blob\n- Simplifies blob.ts to use put\\(\\) directly\n- Add E2E test script with Clerk session + agent auth\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git -C /Users/devingould/agentdrop commit -m \"$\\(cat <<''EOF''\nFix auth for binary uploads and query param signing\n\n- Skip body in signature verification for non-JSON content types\n- Fix E2E test to sign pathname only \\(exclude query params\\)\n- Accept 201 status codes for create operations\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

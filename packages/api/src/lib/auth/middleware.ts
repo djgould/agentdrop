@@ -49,9 +49,12 @@ export function withAuth(
 
     // If Clerk didn't work, try agent auth
     if (!auth) {
-      // Read body for signature verification if the request has one
+      // Read body for signature verification only for JSON requests.
+      // Binary uploads (file content) are not included in the signature.
       let body: string | undefined;
-      if (req.method !== "GET" && req.method !== "HEAD" && req.method !== "DELETE") {
+      const ct = req.headers.get("content-type") ?? "";
+      const isJson = ct.includes("application/json");
+      if (isJson && req.method !== "GET" && req.method !== "HEAD" && req.method !== "DELETE") {
         try {
           body = await req.clone().text();
         } catch {
