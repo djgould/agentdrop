@@ -1,11 +1,10 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { uploadRequestSchema } from "@agentdrop/shared";
-import type { UploadResponse, AuthContext } from "@agentdrop/shared";
+import type { AuthContext } from "@agentdrop/shared";
 import { withAuth } from "@/lib/auth/middleware";
 import { db } from "@/db";
 import { files } from "@/db/schema";
-import { generateClientToken } from "@/lib/blob";
 import { logAudit } from "@/lib/audit";
 import { badRequest, internalError } from "@/lib/errors";
 
@@ -23,10 +22,8 @@ export const POST = withAuth(async (req: NextRequest, _ctx: { params: Promise<Re
   }
 
   const { filename, contentType, sizeBytes } = parsed.data;
-
-  // Determine owner info from auth context
-  const ownerId = auth!.type === "human" ? auth!.userId : auth!.keyHash;
-  const ownerType = auth!.type === "human" ? ("human" as const) : ("agent" as const);
+  const ownerId = auth.type === "human" ? auth.userId : auth.keyHash;
+  const ownerType = auth.type;
 
   // Create pending file record
   let fileRecord: { id: string };
@@ -47,26 +44,14 @@ export const POST = withAuth(async (req: NextRequest, _ctx: { params: Promise<Re
     return internalError("Failed to create file record");
   }
 
-  // Generate a client upload token for Vercel Blob
-  let clientToken: string;
-  try {
-    clientToken = await generateClientToken(filename, contentType, sizeBytes);
-  } catch (err) {
-    console.error("Failed to generate upload token:", err);
-    return internalError("Failed to generate upload URL");
-  }
-
-  // Audit log
-  await logAudit(auth!, "upload.initiate", "file", fileRecord.id, {
+  await logAudit(auth, "upload.initiate", "file", fileRecord.id, {
     filename,
     contentType,
     sizeBytes,
   });
 
-  const response: UploadResponse = {
-    uploadUrl: clientToken,
-    fileId: fileRecord.id,
-  };
-
-  return NextResponse.json(response, { status: 201 });
+  return NextResponse.json(
+    { uploadUrl: `/api/upload/${fileRecord.id}/blob`, fileId: fileRecord.id },
+    { status: 201 },
+  );
 });
