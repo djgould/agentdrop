@@ -222,41 +222,36 @@ export default function Home() {
         </h2>
         <div
           style={{
-            backgroundColor: "#171717",
-            border: "1px solid #262626",
-            borderRadius: "8px",
-            padding: "20px 24px",
-            lineHeight: 1.8,
-            fontSize: "0.9rem",
-            marginBottom: "16px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
           }}
         >
-          <CodeLine comment="# Agent A: create identity and upload a file" />
-          <CodeLine command="agentdrop keys create agent-a" />
-          <CodeLine command="agentdrop upload report.pdf" />
-          <CodeLine dim="  → file_id: f-8a3b..." />
-          <CodeLine />
-          <CodeLine comment="# Agent A: get Agent B's public key hash" />
-          <CodeLine command="agentdrop keys export agent-b" />
-          <CodeLine dim="  → key_hash: kh-7f2e..." />
-          <CodeLine />
-          <CodeLine comment="# Agent A: grant Agent B download access for 1 hour" />
-          <CodeLine command="agentdrop grant f-8a3b --to kh-7f2e --ttl 1h" />
-          <CodeLine dim="  → token: eyJhbG..." />
-        </div>
-        <div
-          style={{
-            backgroundColor: "#171717",
-            border: "1px solid #262626",
-            borderRadius: "8px",
-            padding: "20px 24px",
-            lineHeight: 1.8,
-            fontSize: "0.9rem",
-          }}
-        >
-          <CodeLine comment="# Agent B: download the file using the grant token" />
-          <CodeLine command="agentdrop download f-8a3b --grant eyJhbG..." />
-          <CodeLine dim="  → saved report.pdf (2.4 MB)" />
+          <ChatBubble agent="A" text="I have a report to share. Let me upload it." />
+          <TerminalBlock>
+            <CodeLine command="agentdrop keys create agent-a" />
+            <CodeLine command="agentdrop upload report.pdf" />
+            <CodeLine dim="  → file_id: f-8a3b..." />
+          </TerminalBlock>
+
+          <ChatBubble agent="B" text="I need that report. Here's my key hash." />
+          <TerminalBlock>
+            <CodeLine command="agentdrop keys create agent-b" />
+            <CodeLine command="agentdrop keys export agent-b" />
+            <CodeLine dim="  → key_hash: kh-7f2e..." />
+          </TerminalBlock>
+
+          <ChatBubble agent="A" text="Granted. Token is scoped to you, expires in 1 hour." />
+          <TerminalBlock>
+            <CodeLine command="agentdrop grant f-8a3b --to kh-7f2e --ttl 1h" />
+            <CodeLine dim="  → token: eyJhbG..." />
+          </TerminalBlock>
+
+          <ChatBubble agent="B" text="Got it. Downloading now." />
+          <TerminalBlock>
+            <CodeLine command="agentdrop download f-8a3b --grant eyJhbG..." />
+            <CodeLine dim="  → saved report.pdf (2.4 MB)" />
+          </TerminalBlock>
         </div>
       </section>
 
@@ -381,6 +376,69 @@ function FeatureCard({
       >
         {description}
       </p>
+    </div>
+  );
+}
+
+function ChatBubble({ agent, text }: { agent: string; text: string }) {
+  const isA = agent === "A";
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: "10px",
+        alignSelf: isA ? "flex-start" : "flex-end",
+        maxWidth: "80%",
+        flexDirection: isA ? "row" : "row-reverse",
+      }}
+    >
+      <div
+        style={{
+          width: "28px",
+          height: "28px",
+          borderRadius: "50%",
+          backgroundColor: isA ? "#1e3a2f" : "#1e293b",
+          color: isA ? "#4ade80" : "#60a5fa",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "0.7rem",
+          fontWeight: 700,
+          flexShrink: 0,
+        }}
+      >
+        {agent}
+      </div>
+      <div
+        style={{
+          backgroundColor: isA ? "#1e3a2f" : "#1e293b",
+          borderRadius: "12px",
+          padding: "8px 14px",
+          fontSize: "0.8rem",
+          color: "#d4d4d4",
+          lineHeight: 1.5,
+        }}
+      >
+        {text}
+      </div>
+    </div>
+  );
+}
+
+function TerminalBlock({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      style={{
+        backgroundColor: "#171717",
+        border: "1px solid #262626",
+        borderRadius: "8px",
+        padding: "14px 20px",
+        lineHeight: 1.8,
+        fontSize: "0.85rem",
+      }}
+    >
+      {children}
     </div>
   );
 }
