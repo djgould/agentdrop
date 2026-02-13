@@ -203,24 +203,12 @@ export default function Home() {
             border: "1px solid #262626",
             borderRadius: "8px",
             padding: "20px 24px",
-            lineHeight: 1.8,
-            fontSize: "0.8rem",
+            lineHeight: 1.9,
+            fontSize: "0.82rem",
             overflow: "auto",
           }}
         >
-          <CodeLine dim="import { AgentDropClient } from '@agentdrop/sdk'" />
-          <CodeLine dim="import { generateKeyPair } from '@agentdrop/shared'" />
-          <CodeLine />
-          <CodeLine dim="const { publicKey, privateKey } = await generateKeyPair()" />
-          <CodeLine dim="const client = new AgentDropClient({ publicKey, privateKey })" />
-          <CodeLine />
-          <CodeLine comment="// Upload" />
-          <CodeLine dim="const file = await client.upload(buf, 'report.pdf', 'application/pdf')" />
-          <CodeLine />
-          <CodeLine comment="// Grant access to another agent for 1 hour" />
-          <CodeLine dim="const { token } = await client.createGrant(" />
-          <CodeLine dim="  file.id, recipientKeyHash, ['download'], 3600" />
-          <CodeLine dim=")" />
+          <SdkCode />
         </div>
       </section>
 
@@ -464,6 +452,105 @@ function TerminalBlock({ children }: { children: React.ReactNode }) {
       {children}
     </div>
   );
+}
+
+// Syntax highlight colors (VS Code dark+ inspired)
+const c = {
+  kw: "#c586c0",    // import, from, const, await
+  fn: "#dcdcaa",    // function/method calls
+  str: "#ce9178",   // strings
+  type: "#4ec9b0",  // types/classes
+  var: "#9cdcfe",   // variables
+  prop: "#9cdcfe",  // properties
+  num: "#b5cea8",   // numbers
+  punct: "#d4d4d4", // punctuation
+  comment: "#6a9955",
+  brace: "#ffd700",  // destructuring braces
+};
+
+function SdkCode() {
+  return (
+    <pre style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+      <Line>
+        <K>import</K> <Br>{"{ "}</Br><T>AgentDropClient</T><Br>{" }"}</Br> <K>from</K> <S>{`'@agentdrop/sdk'`}</S>
+      </Line>
+      <Line>
+        <K>import</K> <Br>{"{ "}</Br><V>generateKeyPair</V><Br>{" }"}</Br> <K>from</K> <S>{`'@agentdrop/shared'`}</S>
+      </Line>
+      <Line />
+      <Line><C>{"// Create an agent identity"}</C></Line>
+      <Line>
+        <K>const</K> <Br>{"{ "}</Br><V>publicKey</V>, <V>privateKey</V><Br>{" }"}</Br> <P>=</P> <K>await</K> <F>generateKeyPair</F><P>()</P>
+      </Line>
+      <Line />
+      <Line>
+        <K>const</K> <V>client</V> <P>=</P> <K>new</K> <T>AgentDropClient</T><P>({"{"}</P>
+      </Line>
+      <Line>
+        {"  "}<V>publicKey</V>, <V>privateKey</V>
+      </Line>
+      <Line><P>{"})"}</P></Line>
+      <Line />
+      <Line><C>{"// Upload a file"}</C></Line>
+      <Line>
+        <K>const</K> <V>file</V> <P>=</P> <K>await</K> <V>client</V>.<F>upload</F><P>(</P>
+      </Line>
+      <Line>
+        {"  "}<V>buffer</V>, <S>{`'report.pdf'`}</S>, <S>{`'application/pdf'`}</S>
+      </Line>
+      <Line><P>)</P></Line>
+      <Line />
+      <Line><C>{"// Grant another agent download access for 1 hour"}</C></Line>
+      <Line>
+        <K>const</K> <Br>{"{ "}</Br><V>token</V><Br>{" }"}</Br> <P>=</P> <K>await</K> <V>client</V>.<F>createGrant</F><P>(</P>
+      </Line>
+      <Line>
+        {"  "}<V>file</V>.<V>id</V>,
+      </Line>
+      <Line>
+        {"  "}<V>recipientKeyHash</V>,
+      </Line>
+      <Line>
+        {"  "}<P>[</P><S>{`'download'`}</S><P>]</P>,
+      </Line>
+      <Line>
+        {"  "}<N>3600</N>
+      </Line>
+      <Line><P>)</P></Line>
+    </pre>
+  );
+}
+
+function Line({ children }: { children?: React.ReactNode }) {
+  if (!children) return <div>{"\n"}</div>;
+  return <div>{children}</div>;
+}
+function K({ children }: { children: React.ReactNode }) {
+  return <span style={{ color: c.kw }}>{children}</span>;
+}
+function F({ children }: { children: React.ReactNode }) {
+  return <span style={{ color: c.fn }}>{children}</span>;
+}
+function S({ children }: { children: React.ReactNode }) {
+  return <span style={{ color: c.str }}>{children}</span>;
+}
+function T({ children }: { children: React.ReactNode }) {
+  return <span style={{ color: c.type }}>{children}</span>;
+}
+function V({ children }: { children: React.ReactNode }) {
+  return <span style={{ color: c.var }}>{children}</span>;
+}
+function P({ children }: { children: React.ReactNode }) {
+  return <span style={{ color: c.punct }}>{children}</span>;
+}
+function N({ children }: { children: React.ReactNode }) {
+  return <span style={{ color: c.num }}>{children}</span>;
+}
+function C({ children }: { children: React.ReactNode }) {
+  return <span style={{ color: c.comment }}>{children}</span>;
+}
+function Br({ children }: { children: React.ReactNode }) {
+  return <span style={{ color: c.brace }}>{children}</span>;
 }
 
 function CodeLine({
