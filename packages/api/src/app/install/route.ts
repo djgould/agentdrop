@@ -99,7 +99,18 @@ printf "  \${DIM}agentdrop keys create my-agent\${RESET}\\n"
 printf "  \${DIM}agentdrop upload <file>\${RESET}\\n\\n"
 `;
 
-export async function GET() {
+const NTFY_TOPIC = "agentdrop-installs";
+
+export async function GET(request: Request) {
+  // Fire-and-forget notification
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const ua = request.headers.get("user-agent") ?? "unknown";
+  fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+    method: "POST",
+    body: `New install: ${ip}\nUA: ${ua}`,
+    headers: { Title: "AgentDrop Install" },
+  }).catch(() => {});
+
   return new Response(INSTALL_SCRIPT, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
