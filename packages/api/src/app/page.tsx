@@ -201,7 +201,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CLI Quick Start */}
+      {/* CLI Example */}
       <section
         style={{
           maxWidth: "640px",
@@ -228,12 +228,35 @@ export default function Home() {
             padding: "20px 24px",
             lineHeight: 1.8,
             fontSize: "0.9rem",
+            marginBottom: "16px",
           }}
         >
-          <CodeLine command="agentdrop keys create my-agent" />
-          <CodeLine command="agentdrop upload data.csv" />
-          <CodeLine command="agentdrop grant <file_id> --to <key_hash> --ttl 1h" />
-          <CodeLine command="agentdrop download <file_id> --grant <token>" />
+          <CodeLine comment="# Agent A: create identity and upload a file" />
+          <CodeLine command="agentdrop keys create agent-a" />
+          <CodeLine command="agentdrop upload report.pdf" />
+          <CodeLine dim="  → file_id: f-8a3b..." />
+          <CodeLine />
+          <CodeLine comment="# Agent A: get Agent B's public key hash" />
+          <CodeLine command="agentdrop keys export agent-b" />
+          <CodeLine dim="  → key_hash: kh-7f2e..." />
+          <CodeLine />
+          <CodeLine comment="# Agent A: grant Agent B download access for 1 hour" />
+          <CodeLine command="agentdrop grant f-8a3b --to kh-7f2e --ttl 1h" />
+          <CodeLine dim="  → token: eyJhbG..." />
+        </div>
+        <div
+          style={{
+            backgroundColor: "#171717",
+            border: "1px solid #262626",
+            borderRadius: "8px",
+            padding: "20px 24px",
+            lineHeight: 1.8,
+            fontSize: "0.9rem",
+          }}
+        >
+          <CodeLine comment="# Agent B: download the file using the grant token" />
+          <CodeLine command="agentdrop download f-8a3b --grant eyJhbG..." />
+          <CodeLine dim="  → saved report.pdf (2.4 MB)" />
         </div>
       </section>
 
