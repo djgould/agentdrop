@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: "AgentDrop — Agent-native file sharing",
@@ -13,7 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, backgroundColor: "#0a0a0a" }}>{children}</body>
+      <body style={{ margin: 0, backgroundColor: "#0a0a0a" }}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
